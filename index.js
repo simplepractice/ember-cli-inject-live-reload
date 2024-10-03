@@ -21,6 +21,7 @@ module.exports = {
       liveReloadOptions.snipver = 1;
     }
 
+    let baseHost = options.liveReloadBaseUrl?.replace(/\/\/([^/]+)\//, '$1');
     let liveReloadPath = buildLiveReloadPath(options.liveReloadPrefix) || '/';
     let path = '';
     if (options.isLatestEmber && options.liveReloadPrefix) {
@@ -28,7 +29,7 @@ module.exports = {
     }
     return `(function() {${liveReloadOptions ? "\n  window.LiveReloadOptions = " + JSON.stringify(liveReloadOptions) + ";" : ''}
   var srcUrl = ${options.liveReloadJsUrl ? "'" + options.liveReloadJsUrl + "'" : null};
-  var host = location.hostname || 'localhost';
+  var host = ${baseHost ? "'" + baseHost + "'" : "location.hostname || 'localhost'"};
   var useCustomPort = ${options.liveReloadPort !== options.port} || location.port !== ${options.liveReloadPort};
   var defaultPort = location.port || (location.protocol === 'https:' ? 443 : 80);
   var port = useCustomPort ? ${options.liveReloadPort} : defaultPort;
@@ -59,7 +60,7 @@ module.exports = {
     process.env.EMBER_CLI_INJECT_LIVE_RELOAD_PORT = options.liveReloadPort;
     process.env.EMBER_CLI_INJECT_LIVE_RELOAD_BASEURL = baseURL;
 
-    let baseURLWithoutHost = baseURL.replace(/^https?:\/\/[^/]+/, '');
+    let baseURLWithoutHost = baseURL.replace(/^https?:/, '').replace(/\/\/[^/]+/, '');
     app.use(baseURLWithoutHost + 'ember-cli-live-reload.js', function(request, response) {
       response.contentType('text/javascript');
       response.send(self.dynamicScript(options));
