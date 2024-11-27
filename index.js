@@ -21,7 +21,7 @@ module.exports = {
       liveReloadOptions.snipver = 1;
     }
 
-    let baseHost = options.liveReloadBaseUrl?.replace(/\/\/([^/]+)\//, '$1');
+    let baseHost = (process.env.PUBLIC_ASSET_URL || options.liveReloadBaseUrl)?.replace(/\/\/([^/]+)\//, '$1');
     let liveReloadPath = buildLiveReloadPath(options.liveReloadPrefix) || '/';
     let path = '';
     if (options.isLatestEmber && options.liveReloadPrefix) {
@@ -49,7 +49,7 @@ module.exports = {
 
     let self = this;
     // maintaining `baseURL` for backwards compatibility. See: http://emberjs.com/blog/2016/04/28/baseURL.html
-    let baseURL = options.liveReloadBaseUrl || options.rootURL || options.baseURL;
+    let baseURL = process.env.PUBLIC_ASSET_URL || options.liveReloadBaseUrl || options.rootURL || options.baseURL;
     if (this.parent) {
       let checker = new VersionChecker(this.parent);
       let depedency = checker.for('ember-cli');
